@@ -1,91 +1,82 @@
-// Pastikan untuk menjalankan kode hanya setelah seluruh halaman dimuat
-document.addEventListener('DOMContentLoaded', () => {
+// my-custom-chat.js (v3 - Link Aset & Logika Final)
 
-  console.log('Custom Overlay Script Loaded.');
+// --- KONFIGURASI ASET ANDA (SUDAH DIATUR UNTUK ANDA) ---
+const GITHUB_USERNAME = 'flevy04';
+const GITHUB_REPO_NAME = 'ytchat-overlay';
 
-  // === KONFIGURASI ===
-  // Ganti URL di bawah ini dengan URL ke GIF sinyal Anda sendiri.
-  // Anda dapat menambahkan sebanyak yang Anda mau.
-  const signalGifs = [
-    'https://FLevy04.github.io/ytchat-overlay/assets/signal1.gif',
-    'https://FLevy04.github.io/ytchat-overlay/assets/signal2.gif',
-    'https://FLevy04.github.io/ytchat-overlay/assets/signal3.gif'
-  ];
+const BASE_ASSET_URL = `https://${GITHUB_USERNAME}.github.io/${GITHUB_REPO_NAME}/assets/`;
 
-  // === FUNGSI BANTUAN ===
-  /**
-   * Memilih elemen acak dari sebuah array.
-   * @param {Array} arr - Array untuk dipilih.
-   * @returns {*} Elemen acak dari array.
-   */
-  function getRandomElement(arr) {
-    if (!arr |
+// Daftar lengkap URL aset Anda
+const signalGifs = [
+    `${BASE_ASSET_URL}signal1.gif`,
+    `${BASE_ASSET_URL}signal2.gif`,
+    `${BASE_ASSET_URL}signal3.gif`
+];
+const satelliteGifUrl = `${BASE_ASSET_URL}satellite.png`;
+const earthGifUrl = `${BASE_ASSET_URL}earth.gif`;
+const plutoGifUrl = `${BASE_ASSET_URL}pluto.gif`;
 
-| arr.length === 0) {
-      return null;
+// --- FUNGSI UTAMA ---
+function customizeMessage(messageElement) {
+    if (messageElement.dataset.customized) {
+        return;
     }
-    const randomIndex = Math.floor(Math.random() * arr.length);
-    return arr[randomIndex];
-  }
+    messageElement.dataset.customized = 'true';
 
-  // === LOGIKA UTAMA: MANIPULASI DOM ===
-  /**
-   * Fungsi ini akan dipanggil untuk setiap pesan baru yang ditambahkan ke DOM.
-   * @param {HTMLElement} messageNode - Elemen.message-wrapper yang baru.
-   */
-  function processNewMessage(messageNode) {
-    // 1. Temukan placeholder GIF di dalam pesan baru.
-    const signalGifPlaceholder = messageNode.querySelector('.signal-gif');
+    const authorElement = messageElement.querySelector('.name, .author-name, .author');
+    if (authorElement) {
+        const avatar = authorElement.parentElement.querySelector('.avatar, .pfp');
+        if(avatar) avatar.style.display = 'none';
 
-    if (!signalGifPlaceholder) {
-      console.error('Placeholder.signal-gif tidak ditemukan di dalam pesan baru.');
-      return;
+        const satelliteImg = document.createElement('img');
+        satelliteImg.className = 'satellite-gif';
+        satelliteImg.src = satelliteGifUrl;
+        authorElement.insertAdjacentElement('afterend', satelliteImg);
+
+        const signalImg = document.createElement('img');
+        signalImg.className = 'signal-gif';
+        signalImg.src = signalGifs[Math.floor(Math.random() * signalGifs.length)];
+        satelliteImg.insertAdjacentElement('afterend', signalImg);
     }
 
-    // 2. Dapatkan URL GIF acak.
-    const randomGifUrl = getRandomElement(signalGifs);
+    if (!messageElement.querySelector('.celestial-footer')) {
+        const footer = document.createElement('div');
+        footer.className = 'celestial-footer';
 
-    if (randomGifUrl) {
-      // 3. Atur atribut 'src' dari placeholder untuk menampilkan GIF.
-      signalGifPlaceholder.src = randomGifUrl;
-      console.log(`GIF diatur ke: ${randomGifUrl}`);
-    } else {
-      console.warn('Array signalGifs kosong atau tidak terdefinisi.');
+        const earthImg = document.createElement('img');
+        earthImg.className = 'celestial-gif';
+        earthImg.src = earthGifUrl;
+
+        // Div ini akan menjadi garis sinyal CSS, tidak perlu gambar lagi
+        const lineDiv = document.createElement('div');
+        lineDiv.className = 'signal-line';
+
+        const plutoImg = document.createElement('img');
+        plutoImg.className = 'celestial-gif';
+        plutoImg.src = plutoGifUrl;
+
+        footer.appendChild(earthImg);
+        footer.appendChild(lineDiv);
+        footer.appendChild(plutoImg);
+
+        messageElement.appendChild(footer);
     }
-  }
+}
 
-  // === PENGAMAT DOM (MUTATION OBSERVER) ===
-  // Ini adalah cara yang andal untuk mendeteksi kapan pesan baru ditambahkan.
-  
-  // Pilih node yang akan diamati (dalam hal ini, seluruh body)
-  const targetNode = document.body;
-
-  // Konfigurasi untuk observer (kita hanya peduli dengan penambahan node anak)
-  const config = { childList: true };
-
-  // Callback function untuk dieksekusi ketika mutasi diamati
-  const callback = (mutationsList, observer) => {
+// --- LOGIKA OBSERVER ---
+const observer = new MutationObserver((mutationsList) => {
     for (const mutation of mutationsList) {
-      if (mutation.type === 'childList') {
-        // Periksa setiap node yang ditambahkan
         mutation.addedNodes.forEach(node => {
-          // Pastikan node tersebut adalah HTMLElement dan memiliki kelas.message-wrapper
-          if (node.nodeType === 1 && node.classList.contains('message-wrapper')) {
-            console.log('Elemen.message-wrapper baru terdeteksi.');
-            // Panggil fungsi pemrosesan kita untuk node baru ini.
-            processNewMessage(node);
-          }
+            if (node.nodeType === 1) {
+                const messages = node.querySelectorAll('.chat-line, .message, .message-container');
+                if (messages.length > 0) {
+                    messages.forEach(customizeMessage);
+                }
+            }
         });
-      }
     }
-  };
-
-  // Buat instance observer dengan callback yang telah kita definisikan
-  const observer = new MutationObserver(callback);
-
-  // Mulai mengamati target node untuk mutasi yang telah dikonfigurasi
-  observer.observe(targetNode, config);
-  
-  console.log('Mutation Observer aktif, menunggu pesan baru...');
-
 });
+
+observer.observe(document.body, { childList: true, subtree: true });
+
+console.log('Custom Chat Script v3 by Gemini is running!');
