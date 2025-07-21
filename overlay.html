@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Custom Chat Overlay</title>
+
+    <!-- ================================================================= -->
+    <!-- SEMUA CSS ANDA DITEMPEL DI SINI                                   -->
+    <!-- ================================================================= -->
+    <style>
+        /* === FONT & LATAR BELAKANG DASAR === */
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap');
+
+        body {
+            background-color: rgba(0, 0, 0, 0) !important;
+            font-family: 'Nunito', sans-serif;
+            overflow: hidden !important;
+            margin: 0;
+            padding: 20px !important;
+            /* Mengatur agar chat muncul dari bawah */
+            display: flex;
+            flex-direction: column-reverse;
+            justify-content: flex-start;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+        }
+
+        /* === SEMBUNYIKAN ELEMEN YANG TIDAK DIINGINKAN === */
+        .avatar, .pfp, .profile-picture {
+            display: none !important;
+        }
+        .meta, .author-container, .author-box {
+            background: none !important;
+            border: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            line-height: 1.5;
+        }
+
+        /* === KUSTOMISASI DESAIN ANDA === */
+        .chat-line, .message, .message-container {
+            background-color: rgba(45, 55, 72, 0.85) !important;
+            border: 1px solid rgba(159, 122, 234, 0.7) !important;
+            border-radius: 15px !important;
+            padding: 10px 15px !important;
+            margin-bottom: 12px !important;
+            max-width: 450px;
+            opacity: 0;
+            animation: fadeInMessage 0.5s ease-out forwards;
+        }
+
+        @keyframes fadeInMessage {
+          from { opacity: 0; transform: translateY(15px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        .name, .author-name, .author {
+            font-size: 20px !important;
+            font-weight: 700 !important;
+            color: #D6BCFA !important;
+            text-transform: uppercase !important;
+        }
+
+        .comment, .message-content, .content {
+            padding: 8px 0 !important;
+            margin: 0 !important;
+            font-size: 18px !important;
+            line-height: 1.5 !important;
+            color: #E2E8F0 !important;
+            text-align: center;
+            word-wrap: break-word;
+        }
+        
+        /* Emote kustom dari YouTube */
+        .comment img {
+            height: 1.5em;
+            vertical-align: middle;
+            margin: -0.2em 0.1em;
+        }
+
+        /* === GAYA UNTUK ELEMEN BARU DARI JAVASCRIPT === */
+        .satellite-gif, .signal-gif {
+            height: 22px !important;
+            width: auto !important;
+            vertical-align: middle !important;
+            display: inline-block !important;
+        }
+        .satellite-gif {
+            margin-left: 8px !important;
+        }
+        .signal-gif {
+            margin-left: 5px !important;
+        }
+
+        .celestial-footer {
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            margin-top: 8px !important;
+            padding-top: 8px !important;
+            border-top: 1px solid rgba(159, 122, 234, 0.2) !important;
+        }
+
+        .celestial-gif {
+            height: 30px !important;
+            width: 30px !important;
+        }
+
+        .signal-line {
+            flex-grow: 1 !important;
+            height: 0px !important;
+            border-bottom: 2px dashed rgba(129, 230, 217, 0.7) !important;
+            margin: 0 10px !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Konten akan ditambahkan oleh Social Stream Ninja di sini -->
+</body>
+
+<!-- ================================================================= -->
+<!-- SEMUA JAVASCRIPT ANDA DITEMPEL DI SINI                            -->
+<!-- ================================================================= -->
+<script>
+    // my-custom-chat.js (v6 - Final All-in-One Version)
+    console.log('--- SCRIPT KUSTOM BERHASIL DIMUAT --- Versi 6 ---');
+
+    // --- KONFIGURASI ASET ANDA ---
+    const GITHUB_USERNAME = 'flevy04';
+    const GITHUB_REPO_NAME = 'ytchat-overlay';
+    const BASE_ASSET_URL = `https://${GITHUB_USERNAME}.github.io/${GITHUB_REPO_NAME}/assets/`;
+
+    const signalGifs = [
+        `${BASE_ASSET_URL}signal1.gif`,
+        `${BASE_ASSET_URL}signal2.gif`,
+        `${BASE_ASSET_URL}signal3.gif`
+    ];
+    const satelliteGifUrl = `${BASE_ASSET_URL}satellite.png`;
+    const earthGifUrl = `${BASE_ASSET_URL}earth.gif`;
+    const plutoGifUrl = `${BASE_ASSET_URL}pluto.gif`; // <-- PERBAIKAN TYPO DI SINI
+
+    // --- FUNGSI UTAMA ---
+    function customizeMessage(messageElement) {
+        if (messageElement.dataset.customized) return;
+        messageElement.dataset.customized = 'true';
+
+        const authorElement = messageElement.querySelector('.name, .author-name, .author');
+        if (authorElement) {
+            const avatar = authorElement.parentElement.querySelector('.avatar, .pfp');
+            if(avatar) avatar.style.display = 'none';
+
+            const satelliteImg = document.createElement('img');
+            satelliteImg.className = 'satellite-gif';
+            satelliteImg.src = satelliteGifUrl;
+            authorElement.insertAdjacentElement('afterend', satelliteImg);
+
+            const signalImg = document.createElement('img');
+            signalImg.className = 'signal-gif';
+            signalImg.src = signalGifs[Math.floor(Math.random() * signalGifs.length)];
+            satelliteImg.insertAdjacentElement('afterend', signalImg);
+        }
+
+        if (!messageElement.querySelector('.celestial-footer')) {
+            const footer = document.createElement('div');
+            footer.className = 'celestial-footer';
+            const earthImg = document.createElement('img');
+            earthImg.className = 'celestial-gif';
+            earthImg.src = earthGifUrl;
+            const lineDiv = document.createElement('div');
+            lineDiv.className = 'signal-line';
+            const plutoImg = document.createElement('img');
+            plutoImg.className = 'celestial-gif';
+            plutoImg.src = plutoGifUrl; // <-- PERBAIKAN TYPO DI SINI
+            footer.appendChild(earthImg);
+            footer.appendChild(lineDiv);
+            footer.appendChild(plutoImg);
+            messageElement.appendChild(footer);
+        }
+    }
+
+    // --- LOGIKA OBSERVER ---
+    const observer = new MutationObserver((mutationsList) => {
+        for (const mutation of mutationsList) {
+            mutation.addedNodes.forEach(node => {
+                if (node.nodeType === 1) {
+                    const messages = node.querySelectorAll('.chat-line, .message, .message-container');
+                    if (messages.length > 0) {
+                        messages.forEach(customizeMessage);
+                    }
+                }
+            });
+        }
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    // Jalankan kustomisasi untuk pesan yang sudah ada saat halaman dimuat
+    document.addEventListener('DOMContentLoaded', () => {
+        console.log('Halaman selesai dimuat, memproses pesan yang sudah ada...');
+        const existingMessages = document.querySelectorAll('.chat-line, .message, .message-container');
+        existingMessages.forEach(customizeMessage);
+    });
+</script>
+</html>
