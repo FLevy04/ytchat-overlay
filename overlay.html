@@ -3,50 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <title>Custom Chat Overlay</title>
-
-    <!-- ================================================================= -->
-    <!-- SEMUA CSS ANDA DITEMPEL DI SINI                                   -->
-    <!-- ================================================================= -->
     <style>
-        /* === FONT & LATAR BELAKANG DASAR === */
+        /* === SEMUA CSS KUSTOM ANDA ADA DI SINI === */
         @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap');
 
         body {
-            background-color: rgba(0, 0, 0, 0) !important;
+            background-color: rgba(0, 0, 0, 0);
             font-family: 'Nunito', sans-serif;
-            overflow: hidden !important;
+            overflow: hidden;
             margin: 0;
-            padding: 20px !important;
-            /* Mengatur agar chat muncul dari bawah */
-            display: flex;
-            flex-direction: column-reverse;
-            justify-content: flex-start;
+            padding: 20px;
+        }
+
+        #chat-container {
             position: absolute;
             bottom: 0;
             left: 0;
             right: 0;
             height: 100%;
+            display: flex;
+            flex-direction: column-reverse;
+            justify-content: flex-start;
         }
 
-        /* === SEMBUNYIKAN ELEMEN YANG TIDAK DIINGINKAN === */
-        .avatar, .pfp, .profile-picture {
-            display: none !important;
-        }
-        .meta, .author-container, .author-box {
-            background: none !important;
-            border: none !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            line-height: 1.5;
-        }
-
-        /* === KUSTOMISASI DESAIN ANDA === */
-        .chat-line, .message, .message-container {
-            background-color: rgba(45, 55, 72, 0.85) !important;
-            border: 1px solid rgba(159, 122, 234, 0.7) !important;
-            border-radius: 15px !important;
-            padding: 10px 15px !important;
-            margin-bottom: 12px !important;
+        .message-wrapper {
+            background-color: rgba(45, 55, 72, 0.85);
+            border: 1px solid rgba(159, 122, 234, 0.7);
+            border-radius: 15px;
+            padding: 10px 15px;
+            margin-bottom: 12px;
             max-width: 450px;
             opacity: 0;
             animation: fadeInMessage 0.5s ease-out forwards;
@@ -57,81 +42,98 @@
           to { opacity: 1; transform: translateY(0); }
         }
 
-        .name, .author-name, .author {
-            font-size: 20px !important;
-            font-weight: 700 !important;
-            color: #D6BCFA !important;
-            text-transform: uppercase !important;
+        .author-line {
+            line-height: 1.5;
         }
 
-        .comment, .message-content, .content {
-            padding: 8px 0 !important;
-            margin: 0 !important;
-            font-size: 18px !important;
-            line-height: 1.5 !important;
-            color: #E2E8F0 !important;
+        .author-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: #D6BCFA;
+            text-transform: uppercase;
+        }
+
+        .comment-content {
+            padding: 8px 0;
+            margin: 0;
+            font-size: 18px;
+            line-height: 1.5;
+            color: #E2E8F0;
             text-align: center;
             word-wrap: break-word;
         }
         
-        /* Emote kustom dari YouTube */
-        .comment img {
+        /* Emote kustom dari YouTube akan menjadi <img> di dalam .comment-content */
+        .comment-content img {
             height: 1.5em;
             vertical-align: middle;
             margin: -0.2em 0.1em;
         }
 
-        /* === GAYA UNTUK ELEMEN BARU DARI JAVASCRIPT === */
         .satellite-gif, .signal-gif {
-            height: 22px !important;
-            width: auto !important;
-            vertical-align: middle !important;
-            display: inline-block !important;
+            height: 22px;
+            width: auto;
+            vertical-align: middle;
+            display: inline-block;
         }
         .satellite-gif {
-            margin-left: 8px !important;
+            margin-left: 8px;
         }
         .signal-gif {
-            margin-left: 5px !important;
+            margin-left: 5px;
         }
 
         .celestial-footer {
-            display: flex !important;
-            justify-content: space-between !important;
-            align-items: center !important;
-            margin-top: 8px !important;
-            padding-top: 8px !important;
-            border-top: 1px solid rgba(159, 122, 234, 0.2) !important;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid rgba(159, 122, 234, 0.2);
         }
 
         .celestial-gif {
-            height: 30px !important;
-            width: 30px !important;
+            height: 30px;
+            width: 30px;
         }
 
         .signal-line {
-            flex-grow: 1 !important;
-            height: 0px !important;
-            border-bottom: 2px dashed rgba(129, 230, 217, 0.7) !important;
-            margin: 0 10px !important;
+            flex-grow: 1;
+            height: 0px;
+            border-bottom: 2px dashed rgba(129, 230, 217, 0.7);
+            margin: 0 10px;
         }
     </style>
 </head>
 <body>
-    <!-- Konten akan ditambahkan oleh Social Stream Ninja di sini -->
-</body>
 
-<!-- ================================================================= -->
-<!-- PENTING: Memuat skrip inti dari Social Stream Ninja (VDO.Ninja)   -->
-<!-- ================================================================= -->
-<script src="https://vdo.ninja/scripts/events.js"></script>
+<!-- Wadah utama untuk menampung semua pesan chat -->
+<div id="chat-container"></div>
 
-<!-- ================================================================= -->
-<!-- SEMUA JAVASCRIPT KUSTOM ANDA DITEMPEL DI SINI                     -->
-<!-- ================================================================= -->
 <script>
-    // my-custom-chat.js (v7 - Final All-in-One Version)
-    console.log('--- SCRIPT KUSTOM BERHASIL DIMUAT --- Versi 7 ---');
+    // === BAGIAN INTI DARI "WINDOWS.HTML" (YANG TERBUKTI BERFUNGSI) ===
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const sessionID = urlParams.get("session"); // Mengambil session ID dari URL
+
+    // Membuat iframe tersembunyi untuk terhubung ke VDO.Ninja
+    const iframe = document.createElement("iframe");
+    iframe.src = `https://vdo.socialstream.ninja/?ln&salt=vdo.ninja&push&label=dock&vd=0&ad=0&novideo&noaudio&autostart&cleanoutput&room=${sessionID}`;
+    iframe.style.cssText = "width: 0px; height: 0px; position: fixed; left: -100px; top: -100px;";
+    document.body.appendChild(iframe);
+
+    // Mendengarkan pesan yang masuk dari iframe
+    window.addEventListener("message", (event) => {
+        if (event.source !== iframe.contentWindow) return;
+        if (event.data.dataReceived && event.data.dataReceived.overlayNinja) {
+            // Saat data diterima, panggil fungsi kita untuk membuat pesan dengan gaya kustom
+            createStyledMessage(event.data.dataReceived.overlayNinja);
+        }
+    });
+
+    // === BAGIAN KUSTOMISASI KITA ===
+
+    const chatContainer = document.getElementById('chat-container');
 
     // --- KONFIGURASI ASET ANDA ---
     const GITHUB_USERNAME = 'flevy04';
@@ -147,71 +149,64 @@
     const earthGifUrl = `${BASE_ASSET_URL}earth.gif`;
     const plutoGifUrl = `${BASE_ASSET_URL}pluto.gif`;
 
-    // --- FUNGSI UTAMA ---
-    function customizeMessage(messageElement) {
-        if (messageElement.dataset.customized) return;
-        messageElement.dataset.customized = 'true';
-
-        const authorElement = messageElement.querySelector('.name, .author-name, .author');
-        if (authorElement) {
-            const avatar = authorElement.parentElement.querySelector('.avatar, .pfp');
-            if(avatar) avatar.style.display = 'none';
-
-            const satelliteImg = document.createElement('img');
-            satelliteImg.className = 'satellite-gif';
-            satelliteImg.src = satelliteGifUrl;
-            authorElement.insertAdjacentElement('afterend', satelliteImg);
-
-            const signalImg = document.createElement('img');
-            signalImg.className = 'signal-gif';
-            signalImg.src = signalGifs[Math.floor(Math.random() * signalGifs.length)];
-            satelliteImg.insertAdjacentElement('afterend', signalImg);
+    function createStyledMessage(data) {
+        // Abaikan jika tidak ada pesan chat
+        if (!data.chatmessage) {
+            return;
         }
 
-        if (!messageElement.querySelector('.celestial-footer')) {
-            const footer = document.createElement('div');
-            footer.className = 'celestial-footer';
-            const earthImg = document.createElement('img');
-            earthImg.className = 'celestial-gif';
-            earthImg.src = earthGifUrl;
-            const lineDiv = document.createElement('div');
-            lineDiv.className = 'signal-line';
-            const plutoImg = document.createElement('img');
-            plutoImg.className = 'celestial-gif';
-            plutoImg.src = plutoGifUrl;
-            footer.appendChild(earthImg);
-            footer.appendChild(lineDiv);
-            footer.appendChild(plutoImg);
-            messageElement.appendChild(footer);
+        // 1. Buat elemen pembungkus utama
+        const messageWrapper = document.createElement('div');
+        messageWrapper.className = 'message-wrapper';
+
+        // 2. Buat baris untuk nama dan ikon
+        const authorLine = document.createElement('div');
+        authorLine.className = 'author-line';
+
+        const authorName = document.createElement('span');
+        authorName.className = 'author-name';
+        authorName.textContent = data.chatname || 'Anonymous';
+        authorLine.appendChild(authorName);
+
+        const satelliteImg = document.createElement('img');
+        satelliteImg.className = 'satellite-gif';
+        satelliteImg.src = satelliteGifUrl;
+        authorLine.appendChild(satelliteImg);
+
+        const signalImg = document.createElement('img');
+        signalImg.className = 'signal-gif';
+        signalImg.src = signalGifs[Math.floor(Math.random() * signalGifs.length)];
+        authorLine.appendChild(signalImg);
+
+        // 3. Buat elemen untuk isi pesan
+        const commentContent = document.createElement('div');
+        commentContent.className = 'comment-content';
+        // Social Stream Ninja sudah mengirim pesan sebagai HTML (dengan emote <img>)
+        commentContent.innerHTML = data.chatmessage;
+
+        // 4. Buat footer
+        const footer = document.createElement('div');
+        footer.className = 'celestial-footer';
+        footer.innerHTML = `
+            <img class="celestial-gif" src="${earthGifUrl}">
+            <div class="signal-line"></div>
+            <img class="celestial-gif" src="${plutoGifUrl}">
+        `;
+
+        // 5. Gabungkan semuanya
+        messageWrapper.appendChild(authorLine);
+        messageWrapper.appendChild(commentContent);
+        messageWrapper.appendChild(footer);
+
+        // 6. Tambahkan ke halaman dan atur agar tidak melebihi batas
+        chatContainer.prepend(messageWrapper);
+        while (chatContainer.children.length > 20) { // Batasi 20 pesan
+            chatContainer.removeChild(chatContainer.lastChild);
         }
     }
 
-    // --- LOGIKA OBSERVER ---
-    const observer = new MutationObserver((mutationsList) => {
-        for (const mutation of mutationsList) {
-            mutation.addedNodes.forEach(node => {
-                // Kita hanya peduli pada elemen HTML, bukan node teks
-                if (node.nodeType === 1) { 
-                    // Cek apakah node yang ditambahkan itu sendiri adalah pesan, atau mengandung pesan
-                    if (node.matches('.chat-line, .message, .message-container')) {
-                        customizeMessage(node);
-                    } else {
-                        const messages = node.querySelectorAll('.chat-line, .message, .message-container');
-                        if (messages.length > 0) {
-                            messages.forEach(customizeMessage);
-                        }
-                    }
-                }
-            });
-        }
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
+    console.log("Overlay Hibrida Siap! Menunggu pesan dari Social Stream Ninja...");
 
-    // Jalankan kustomisasi untuk pesan yang sudah ada saat halaman dimuat
-    document.addEventListener('DOMContentLoaded', () => {
-        console.log('Halaman selesai dimuat, memproses pesan yang sudah ada...');
-        const existingMessages = document.querySelectorAll('.chat-line, .message, .message-container');
-        existingMessages.forEach(customizeMessage);
-    });
 </script>
+</body>
 </html>
