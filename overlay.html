@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Custom Chat Overlay</title>
@@ -8,6 +8,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap');
 
         body {
+            /* DIBUAT IDENTIK DENGAN windows.html: Sederhana, tanpa flexbox */
             background-color: rgba(0, 0, 0, 0);
             font-family: 'Nunito', sans-serif;
             overflow: hidden;
@@ -16,6 +17,7 @@
         }
 
         #chat-container {
+            /* PERBAIKAN: Logika Flexbox dipindahkan ke sini dari body */
             position: absolute;
             bottom: 0;
             left: 0;
@@ -24,6 +26,7 @@
             display: flex;
             flex-direction: column-reverse;
             justify-content: flex-start;
+            padding: 20px; /* Padding dipindahkan ke sini */
         }
 
         .message-wrapper {
@@ -63,7 +66,6 @@
             word-wrap: break-word;
         }
         
-        /* Emote kustom dari YouTube akan menjadi <img> di dalam .comment-content */
         .comment-content img {
             height: 1.5em;
             vertical-align: middle;
@@ -115,23 +117,31 @@
 
     const urlParams = new URLSearchParams(window.location.search);
     const sessionID = urlParams.get("session"); // Mengambil session ID dari URL
+    const password = "false"; // Menambahkan parameter ini agar 100% sama dengan windows.html
 
-    // Membuat iframe tersembunyi untuk terhubung ke VDO.Ninja
-    const iframe = document.createElement("iframe");
-    iframe.src = `https://vdo.socialstream.ninja/?ln&salt=vdo.ninja&push&label=dock&vd=0&ad=0&novideo&noaudio&autostart&cleanoutput&room=${sessionID}`;
-    iframe.style.cssText = "width: 0px; height: 0px; position: fixed; left: -100px; top: -100px;";
-    document.body.appendChild(iframe);
+    // Jika tidak ada session ID, tampilkan pesan error dan berhenti.
+    if (!sessionID) {
+        document.body.innerHTML = '<div style="font-family: sans-serif; color: white; background: red; padding: 20px; border-radius: 10px;">ERROR: Session ID tidak ditemukan di URL. Pastikan URL Anda mengandung `?session=ID_ANDA`.</div>';
+    } else {
+        // PERBAIKAN: Membuat URL iframe 100% identik dengan windows.html
+        const iframe = document.createElement("iframe");
+        iframe.src = `https://vdo.socialstream.ninja/?ln&salt=vdo.ninja&password=${password}&push&label=dock&vd=0&ad=0&novideo&noaudio&autostart&cleanoutput&room=${sessionID}`;
+        iframe.style.cssText = "width: 0px; height: 0px; position: fixed; left: -100px; top: -100px;";
+        document.body.appendChild(iframe);
 
-    // Mendengarkan pesan yang masuk dari iframe
-    window.addEventListener("message", (event) => {
-        if (event.source !== iframe.contentWindow) return;
-        if (event.data.dataReceived && event.data.dataReceived.overlayNinja) {
-            // Saat data diterima, panggil fungsi kita untuk membuat pesan dengan gaya kustom
-            createStyledMessage(event.data.dataReceived.overlayNinja);
-        }
-    });
+        // Mendengarkan pesan yang masuk dari iframe
+        window.addEventListener("message", (event) => {
+            if (event.source !== iframe.contentWindow) return;
+            if (event.data.dataReceived && event.data.dataReceived.overlayNinja) {
+                // Saat data diterima, panggil fungsi kita untuk membuat pesan dengan gaya kustom
+                addStyledMessageToOverlay(event.data.dataReceived.overlayNinja);
+            }
+        });
+        console.log("Overlay Hibrida Siap! Menunggu pesan dari Social Stream Ninja...");
+    }
+    
 
-    // === BAGIAN KUSTOMISASI KITA ===
+    // === BAGIAN KUSTOMISASI KITA (FUNGSI BARU) ===
 
     const chatContainer = document.getElementById('chat-container');
 
@@ -149,7 +159,7 @@
     const earthGifUrl = `${BASE_ASSET_URL}earth.gif`;
     const plutoGifUrl = `${BASE_ASSET_URL}pluto.gif`;
 
-    function createStyledMessage(data) {
+    function addStyledMessageToOverlay(data) {
         // Abaikan jika tidak ada pesan chat
         if (!data.chatmessage) {
             return;
@@ -204,9 +214,6 @@
             chatContainer.removeChild(chatContainer.lastChild);
         }
     }
-
-    console.log("Overlay Hibrida Siap! Menunggu pesan dari Social Stream Ninja...");
-
 </script>
 </body>
 </html>
