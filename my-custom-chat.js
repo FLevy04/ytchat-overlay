@@ -1,4 +1,11 @@
-// my-custom-chat.js (v3 - Link Aset & Logika Final)
+// my-custom-chat.js (v4 - Final Debugging Version)
+
+// ===================================================================
+// TANDA KEHIDUPAN: Baris ini akan mencetak pesan ke konsol OBS
+// untuk memastikan file ini berhasil dimuat dan dijalankan.
+console.log('--- SCRIPT KUSTOM BERHASIL DIMUAT --- Versi 4 ---');
+// ===================================================================
+
 
 // --- KONFIGURASI ASET ANDA (SUDAH DIATUR UNTUK ANDA) ---
 const GITHUB_USERNAME = 'flevy04';
@@ -47,7 +54,6 @@ function customizeMessage(messageElement) {
         earthImg.className = 'celestial-gif';
         earthImg.src = earthGifUrl;
 
-        // Div ini akan menjadi garis sinyal CSS, tidak perlu gambar lagi
         const lineDiv = document.createElement('div');
         lineDiv.className = 'signal-line';
 
@@ -79,4 +85,4 @@ const observer = new MutationObserver((mutationsList) => {
 
 observer.observe(document.body, { childList: true, subtree: true });
 
-console.log('Custom Chat Script v3 by Gemini is running!');
+console.log('Custom Chat Script v4 by Gemini is running!');
