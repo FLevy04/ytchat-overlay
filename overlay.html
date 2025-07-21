@@ -122,11 +122,16 @@
 </body>
 
 <!-- ================================================================= -->
-<!-- SEMUA JAVASCRIPT ANDA DITEMPEL DI SINI                            -->
+<!-- PENTING: Memuat skrip inti dari Social Stream Ninja (VDO.Ninja)   -->
+<!-- ================================================================= -->
+<script src="https://vdo.ninja/scripts/events.js"></script>
+
+<!-- ================================================================= -->
+<!-- SEMUA JAVASCRIPT KUSTOM ANDA DITEMPEL DI SINI                     -->
 <!-- ================================================================= -->
 <script>
-    // my-custom-chat.js (v6 - Final All-in-One Version)
-    console.log('--- SCRIPT KUSTOM BERHASIL DIMUAT --- Versi 6 ---');
+    // my-custom-chat.js (v7 - Final All-in-One Version)
+    console.log('--- SCRIPT KUSTOM BERHASIL DIMUAT --- Versi 7 ---');
 
     // --- KONFIGURASI ASET ANDA ---
     const GITHUB_USERNAME = 'flevy04';
@@ -140,7 +145,7 @@
     ];
     const satelliteGifUrl = `${BASE_ASSET_URL}satellite.png`;
     const earthGifUrl = `${BASE_ASSET_URL}earth.gif`;
-    const plutoGifUrl = `${BASE_ASSET_URL}pluto.gif`; // <-- PERBAIKAN TYPO DI SINI
+    const plutoGifUrl = `${BASE_ASSET_URL}pluto.gif`;
 
     // --- FUNGSI UTAMA ---
     function customizeMessage(messageElement) {
@@ -173,7 +178,7 @@
             lineDiv.className = 'signal-line';
             const plutoImg = document.createElement('img');
             plutoImg.className = 'celestial-gif';
-            plutoImg.src = plutoGifUrl; // <-- PERBAIKAN TYPO DI SINI
+            plutoImg.src = plutoGifUrl;
             footer.appendChild(earthImg);
             footer.appendChild(lineDiv);
             footer.appendChild(plutoImg);
@@ -185,10 +190,16 @@
     const observer = new MutationObserver((mutationsList) => {
         for (const mutation of mutationsList) {
             mutation.addedNodes.forEach(node => {
-                if (node.nodeType === 1) {
-                    const messages = node.querySelectorAll('.chat-line, .message, .message-container');
-                    if (messages.length > 0) {
-                        messages.forEach(customizeMessage);
+                // Kita hanya peduli pada elemen HTML, bukan node teks
+                if (node.nodeType === 1) { 
+                    // Cek apakah node yang ditambahkan itu sendiri adalah pesan, atau mengandung pesan
+                    if (node.matches('.chat-line, .message, .message-container')) {
+                        customizeMessage(node);
+                    } else {
+                        const messages = node.querySelectorAll('.chat-line, .message, .message-container');
+                        if (messages.length > 0) {
+                            messages.forEach(customizeMessage);
+                        }
                     }
                 }
             });
@@ -204,3 +215,13 @@
     });
 </script>
 </html>
+```
+
+### Langkah Selanjutnya
+
+1.  **Unggah Ulang:** Unggah file `overlay.html` yang telah diperbarui ini ke repositori GitHub Anda, menimpa versi yang lama.
+2.  **Gunakan URL yang Sama:** URL yang Anda gunakan sebelumnya sudah benar. Anda tidak perlu mengubahnya.
+    `https://cdn.jsdelivr.net/gh/flevy04/ytchat-overlay/overlay.html?session=nBuVXgB4XV`
+3.  **Refresh Cache di OBS:** Ini adalah langkah yang paling penting. Buka properti Browser Source Anda di OBS dan klik tombol **"Refresh cache of current page"**.
+
+Sekarang, halaman `overlay.html` Anda akan terlebih dahulu memuat mesin `events.js` dari Social Stream Ninja, yang akan mulai menampilkan pesan chat. Segera setelah itu, skrip kustom kita akan berjalan untuk memodifikasi pesan-pesan tersebut sesuai dengan desain Anda. Halaman tidak akan lagi koso
