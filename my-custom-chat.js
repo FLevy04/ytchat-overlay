@@ -1,19 +1,16 @@
-// my-custom-chat.js (v4 - Final Debugging Version)
+// my-custom-chat.js (v5 - Final Version)
 
 // ===================================================================
-// TANDA KEHIDUPAN: Baris ini akan mencetak pesan ke konsol OBS
+// TANDA KEHIDUPAN: Baris ini akan mencetak pesan ke konsol
 // untuk memastikan file ini berhasil dimuat dan dijalankan.
-console.log('--- SCRIPT KUSTOM BERHASIL DIMUAT --- Versi 4 ---');
+console.log('--- SCRIPT KUSTOM BERHASIL DIMUAT --- Versi 5 ---');
 // ===================================================================
 
-
-// --- KONFIGURASI ASET ANDA (SUDAH DIATUR UNTUK ANDA) ---
+// --- KONFIGURASI ASET ANDA ---
 const GITHUB_USERNAME = 'flevy04';
 const GITHUB_REPO_NAME = 'ytchat-overlay';
-
 const BASE_ASSET_URL = `https://${GITHUB_USERNAME}.github.io/${GITHUB_REPO_NAME}/assets/`;
 
-// Daftar lengkap URL aset Anda
 const signalGifs = [
     `${BASE_ASSET_URL}signal1.gif`,
     `${BASE_ASSET_URL}signal2.gif`,
@@ -25,9 +22,7 @@ const plutoGifUrl = `${BASE_ASSET_URL}pluto.gif`;
 
 // --- FUNGSI UTAMA ---
 function customizeMessage(messageElement) {
-    if (messageElement.dataset.customized) {
-        return;
-    }
+    if (messageElement.dataset.customized) return;
     messageElement.dataset.customized = 'true';
 
     const authorElement = messageElement.querySelector('.name, .author-name, .author');
@@ -49,27 +44,22 @@ function customizeMessage(messageElement) {
     if (!messageElement.querySelector('.celestial-footer')) {
         const footer = document.createElement('div');
         footer.className = 'celestial-footer';
-
         const earthImg = document.createElement('img');
         earthImg.className = 'celestial-gif';
         earthImg.src = earthGifUrl;
-
         const lineDiv = document.createElement('div');
         lineDiv.className = 'signal-line';
-
         const plutoImg = document.createElement('img');
         plutoImg.className = 'celestial-gif';
-        plutoImg.src = plutoGifUrl;
-
+        plutoImg.src = plutoUrl;
         footer.appendChild(earthImg);
         footer.appendChild(lineDiv);
         footer.appendChild(plutoImg);
-
         messageElement.appendChild(footer);
     }
 }
 
-// --- LOGIKA OBSERVER ---
+// --- LOGIKA OBSERVER (untuk pesan BARU) ---
 const observer = new MutationObserver((mutationsList) => {
     for (const mutation of mutationsList) {
         mutation.addedNodes.forEach(node => {
@@ -82,7 +72,13 @@ const observer = new MutationObserver((mutationsList) => {
         });
     }
 });
-
 observer.observe(document.body, { childList: true, subtree: true });
 
-console.log('Custom Chat Script v4 by Gemini is running!');
+// --- (BARU) Jalankan kustomisasi untuk pesan yang SUDAH ADA saat halaman dimuat ---
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('Halaman selesai dimuat, memproses pesan yang sudah ada...');
+    const existingMessages = document.querySelectorAll('.chat-line, .message, .message-container');
+    existingMessages.forEach(customizeMessage);
+});
+
+console.log('Custom Chat Script v5 by Gemini is running!');
