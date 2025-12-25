@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Custom Chat Overlay - Catppuccin Macchiato</title>
+    <style>
+        /* === TEMA CATPPUCCIN MACCHIATO LAVENDER === */
+        /* Palette Reference:
+           Base: #24273a (Background)
+           Text: #cad3f5 (Main Text)
+           Lavender: #b7bdf8 (Accent/Border/Name)
+           Overlay: rgba(36, 39, 58, 0.9)
+        */
+
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap');
+
+        body {
+            background-color: rgba(0, 0, 0, 0);
+            font-family: 'Nunito', sans-serif;
+            overflow: hidden;
+            margin: 0;
+            padding: 20px;
+        }
+
+        #chat-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            display: flex;
+            flex-direction: column-reverse;
+            justify-content: flex-start;
+            padding: 20px;
+        }
+
+        .message-wrapper {
+            /* Warna Base Macchiato dengan transparansi */
+            background-color: rgba(36, 39, 58, 0.9); 
+            /* Border Lavender */
+            border: 2px solid #b7bdf8; 
+            border-radius: 15px;
+            padding: 10px 15px;
+            margin-bottom: 12px;
+            max-width: 450px;
+            opacity: 0;
+            animation: fadeInMessage 0.5s ease-out forwards;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        @keyframes fadeInMessage {
+          from { opacity: 0; transform: translateY(15px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        .author-line {
+            line-height: 1.5;
+            display: flex;
+            align-items: center;
+        }
+
+        .author-name {
+            font-size: 20px;
+            font-weight: 700;
+            /* Warna Lavender untuk Nama User */
+            color: #b7bdf8; 
+            text-transform: uppercase;
+            text-shadow: 0 0 5px rgba(183, 189, 248, 0.3);
+        }
+
+        .comment-content {
+            padding: 8px 0;
+            margin: 0;
+            font-size: 18px;
+            line-height: 1.5;
+            /* Warna Text Standar Catppuccin (Putih Kebiruan) - Lebih lembut di mata */
+            color: #cad3f5; 
+            text-align: left; /* Sedikit dirapikan ke kiri agar lebih standar */
+            word-wrap: break-word;
+        }
+        
+        .comment-content img {
+            height: 1.5em;
+            vertical-align: middle;
+            margin: -0.2em 0.1em;
+        }
+
+        .satellite-gif, .signal-gif {
+            height: 22px;
+            width: auto;
+            vertical-align: middle;
+            display: inline-block;
+        }
+        .satellite-gif {
+            margin-left: 8px;
+        }
+        .signal-gif {
+            margin-left: 5px;
+        }
+
+        .celestial-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+            padding-top: 8px;
+            /* Garis pemisah tipis warna Lavender */
+            border-top: 1px solid rgba(183, 189, 248, 0.2); 
+        }
+
+        .celestial-gif {
+            height: 30px;
+            width: 30px;
+            opacity: 0.8; /* Sedikit transparan agar menyatu */
+        }
+
+        .signal-line {
+            flex-grow: 1;
+            height: 2px;
+            /* Background track garis */
+            background-color: rgba(183, 189, 248, 0.1); 
+            margin: 0 10px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 2px;
+        }
+        
+        .signal-line::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /* Animasi Sinyal Lavender */
+            background: linear-gradient(90deg, transparent, rgba(183, 189, 248, 0.8), transparent);
+            animation: animate-signal 2.5s linear infinite;
+        }
+
+        @keyframes animate-signal {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Wadah utama untuk menampung semua pesan chat -->
+<div id="chat-container"></div>
+
+<script>
+    // === BAGIAN INTI DARI "WINDOWS.HTML" (YANG TERBUKTI BERFUNGSI) ===
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const sessionID = urlParams.get("session"); // Mengambil session ID dari URL
+    const password = "false"; // Menambahkan parameter ini agar 100% sama dengan windows.html
+
+    // Jika tidak ada session ID, tampilkan pesan error dan berhenti.
+    if (!sessionID) {
+        document.body.innerHTML = '<div style="font-family: sans-serif; color: #cad3f5; background: #ed8796; padding: 20px; border-radius: 10px;">ERROR: Session ID tidak ditemukan di URL. Pastikan URL Anda mengandung `?session=ID_ANDA`.</div>';
+    } else {
+        const iframe = document.createElement("iframe");
+        iframe.src = `https://vdo.socialstream.ninja/?ln&salt=vdo.ninja&password=${password}&push&label=dock&vd=0&ad=0&novideo&noaudio&autostart&cleanoutput&room=${sessionID}`;
+        iframe.style.cssText = "width: 0px; height: 0px; position: fixed; left: -100px; top: -100px;";
+        document.body.appendChild(iframe);
+
+        // Mendengarkan pesan yang masuk dari iframe
+        window.addEventListener("message", (event) => {
+            if (event.source !== iframe.contentWindow) return;
+            if (event.data.dataReceived && event.data.dataReceived.overlayNinja) {
+                addStyledMessageToOverlay(event.data.dataReceived.overlayNinja);
+            }
+        });
+        console.log("Overlay Hibrida Siap! Menunggu pesan dari Social Stream Ninja...");
+    }
+    
+
+    // === BAGIAN KUSTOMISASI KITA ===
+
+    const chatContainer = document.getElementById('chat-container');
+
+    // --- KONFIGURASI ASET ANDA ---
+    const GITHUB_USERNAME = 'flevy04';
+    const GITHUB_REPO_NAME = 'ytchat-overlay';
+    const BASE_ASSET_URL = `https://${GITHUB_USERNAME}.github.io/${GITHUB_REPO_NAME}/assets/`;
+
+    const signalGifs = [
+        `${BASE_ASSET_URL}signal1.gif`,
+        `${BASE_ASSET_URL}signal2.gif`,
+        `${BASE_ASSET_URL}signal3.gif`
+    ];
+    const satelliteGifUrl = `${BASE_ASSET_URL}satellite.png`;
+    const earthGifUrl = `${BASE_ASSET_URL}earth.gif`;
+    const plutoGifUrl = `${BASE_ASSET_URL}pluto.gif`;
+
+    function addStyledMessageToOverlay(data) {
+        if (!data.chatmessage) return;
+
+        // 1. Buat elemen pembungkus utama
+        const messageWrapper = document.createElement('div');
+        messageWrapper.className = 'message-wrapper';
+
+        // 2. Buat baris untuk nama dan ikon
+        const authorLine = document.createElement('div');
+        authorLine.className = 'author-line';
+
+        const authorName = document.createElement('span');
+        authorName.className = 'author-name';
+        authorName.textContent = data.chatname || 'Anonymous';
+        authorLine.appendChild(authorName);
+
+        const satelliteImg = document.createElement('img');
+        satelliteImg.className = 'satellite-gif';
+        satelliteImg.src = satelliteGifUrl;
+        authorLine.appendChild(satelliteImg);
+
+        const signalImg = document.createElement('img');
+        signalImg.className = 'signal-gif';
+        signalImg.src = signalGifs[Math.floor(Math.random() * signalGifs.length)];
+        authorLine.appendChild(signalImg);
+
+        // 3. Buat elemen untuk isi pesan
+        const commentContent = document.createElement('div');
+        commentContent.className = 'comment-content';
+        commentContent.innerHTML = data.chatmessage;
+
+        // 4. Buat footer
+        const footer = document.createElement('div');
+        footer.className = 'celestial-footer';
+        footer.innerHTML = `
+            <img class="celestial-gif" src="${earthGifUrl}">
+            <div class="signal-line"></div>
+            <img class="celestial-gif" src="${plutoGifUrl}">
+        `;
+
+        // 5. Gabungkan semuanya
+        messageWrapper.appendChild(authorLine);
+        messageWrapper.appendChild(commentContent);
+        messageWrapper.appendChild(footer);
+
+        // 6. Tambahkan ke halaman
+        chatContainer.prepend(messageWrapper);
+        while (chatContainer.children.length > 20) { 
+            chatContainer.removeChild(chatContainer.lastChild);
+        }
+    }
+</script>
+</body>
+</html>
